@@ -1,36 +1,59 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import PropTypes from 'prop-types';
 
-function Projects() {
+// Centralized project data for maintainability
+const PROJECTS = [
+  {
+    id: 1,
+    title: 'Kritimmind Technology Website',
+    description:
+      "Built the frontend for Kritimmind Technology’s website using React, JavaScript, and Tailwind CSS, focusing on responsive design, performance, and SEO optimization.",
+    image: '/kritim.png',
+  },
+  {
+    id: 2,
+    title: 'Marvel Website',
+    description:
+      "Created a Marvel website using HTML and CSS with a clean layout, optimized styling, and SEO-friendly structure to showcase character content."
+
+    ,
+    image: '/Marvel.jpeg',
+  },
+];
+
+// Animation variants for Framer Motion
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: 'easeOut',
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const childVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+// Reusable ProjectCard component
+const ProjectCard = ({ title, description, image }) => {
+  const [ref, inView] = useInView({
+    threshold: 0.2,
+    triggerOnce: true,
+    rootMargin: '50px',
+  });
+  const [isHovered, setIsHovered] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  useEffect(() => {
-    const sections = document.querySelectorAll('.fade-in');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('opacity-100', 'translate-y-0');
-      });
-    }, { threshold: 0.1 });
-    sections.forEach(section => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  const projects = [
-    {
-      id: 1,
-      title: "Kritimmind Technology Website",
-      desc: "Designed and implemented the frontend for Kritimmind Technology's official website using React, JavaScript, and Tailwind CSS. Enhanced user experience with responsive design and optimized performance as a senior frontend developer.",
-      img: "/kritim.png", 
-    },
-    {
-      id: 2,
-      title: "Marvel Website",
-      desc: "Created a static website for Marvel using HTML and CSS, focusing on a clean layout and styling to showcase character information and media.",
-      img: "/Marvel.jpeg",
-    },
-  ];
-
-  const openImagePopup = (imgSrc) => {
-    setSelectedImage(imgSrc);
+  const openImagePopup = () => {
+    if (image) setSelectedImage(image);
   };
 
   const closeImagePopup = () => {
@@ -38,51 +61,115 @@ function Projects() {
   };
 
   return (
-    <section className="p-12 max-w-6xl mx-auto">
-      <h1 className="text-5xl font-extrabold text-blue-500 mb-8">Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projects.map(project => (
-          <div key={project.id} className="fade-in opacity-0 translate-y-10 transition-all duration-1000 bg-gray-100 p-6 rounded-lg shadow-md">
-            <h3 className="text-2xl font-semibold text-[#B22222] mb-2">{project.title}</h3>
-            <p className="text-gray-700 mb-4">{project.desc}</p>
-            <div className="h-32 bg-gray-200 rounded">
-              {project.img ? (
-                <img 
-                  src={project.img} 
-                  alt={`${project.title} screenshot`} 
-                  className="h-full w-full object-cover rounded cursor-pointer" 
-                  onClick={() => openImagePopup(project.img)}
-                />
-              ) : (
-                <p className="text-center text-gray-800">No image available</p>
-              )}
-            </div>
-          </div>
+    <>
+      <motion.div
+        ref={ref}
+        variants={cardVariants}
+        initial="hidden"
+        animate={inView ? 'visible' : 'hidden'}
+        className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <motion.h3
+          variants={childVariants}
+          className="text-2xl font-bold text-red-700 mb-3 tracking-tight"
+        >
+          {title}
+        </motion.h3>
+        <motion.p
+          variants={childVariants}
+          className="text-gray-600 mb-4 leading-relaxed"
+        >
+          {description}
+        </motion.p>
+        <motion.div
+          variants={childVariants}
+          className="h-32 bg-gray-100 rounded-lg overflow-hidden"
+        >
+          {image ? (
+            <img
+              src={image}
+              alt={`${title} screenshot`}
+              className={`h-full w-full object-cover transition-transform duration-300 ${isHovered ? 'scale-105' : ''
+                } cursor-pointer`}
+              loading="lazy"
+              onClick={openImagePopup}
+            />
+          ) : (
+            <p className="h-full flex items-center justify-center text-gray-500 font-medium">
+              No image available
+            </p>
+          )}
+        </motion.div>
+      </motion.div>
+
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+            onClick={closeImagePopup}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative max-w-4xl w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={selectedImage}
+                alt="Project screenshot popup"
+                className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+              />
+              <button
+                className="absolute top-4 right-4 bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold hover:bg-red-700 transition-colors duration-200"
+                onClick={closeImagePopup}
+              >
+                &times;
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+ProjectCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  image: PropTypes.string,
+};
+
+const Projects = () => {
+  return (
+    <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gradient-to-b from-gray-50 to-white">
+      <motion.h1
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-12 text-center tracking-tight"
+      >
+        Projects
+      </motion.h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        {PROJECTS.map((project) => (
+          <ProjectCard
+            key={project.id}
+            title={project.title}
+            description={project.description}
+            image={project.image}
+          />
         ))}
       </div>
-
-      {selectedImage && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-          onClick={closeImagePopup}
-        >
-          <div className="relative max-w-4xl w-full">
-            <img 
-              src={selectedImage} 
-              alt="Project screenshot popup" 
-              className="w-full h-auto max-h-[80vh] object-contain rounded"
-            />
-            <button 
-              className="absolute top-2 right-2 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center text-xl font-bold"
-              onClick={closeImagePopup}
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   );
-}
+};
+
+Projects.propTypes = {};
 
 export default Projects;
