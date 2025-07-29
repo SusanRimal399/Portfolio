@@ -98,7 +98,7 @@ const About = memo(({ profileImage = '/Profile.jpeg', achievements = [] }) => {
                 As a Frontend Developer at Kritimmind Technology, I have over 1 year of experience building responsive, user-focused web applications using React, JavaScript, and modern CSS frameworks. I focus on creating accessible, high-performance interfaces.
               </p>
               <p className="text-base sm:text-lg text-white leading-relaxed mt-3">
-                I am learning SEO and web performance optimization using structured data, lazy loading, and server-side rendering. I'm currently exploring AI integration and Web3 technologies to expand the scope of modern web solutions.
+                I am learning SEO and web performance optimization using structured data, lazy loading, server-side rendering and other key SEO principles. I'm currently exploring AI integration and Web3 technologies to expand the scope of modern web solutions.
               </p>
             </motion.div>
             <motion.div
