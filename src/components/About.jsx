@@ -94,7 +94,7 @@ const About = memo(({ profileImage = '/Profile.jpeg', achievements = [] }) => {
               role="region"
               aria-label="Professional Bio"
             >
-              <p className="text-base sm:text-lg text-white leading-relaxed">
+              <p className="text-base sm:text-lg text-white leading-relaxed justify-text">
                 As a Frontend Developer at Kritimmind Technology, I have over 1 year of experience building responsive, user-focused web applications using React, JavaScript, and modern CSS frameworks. I focus on creating accessible, high-performance interfaces.
               </p>
               <p className="text-base sm:text-lg text-white leading-relaxed mt-3">

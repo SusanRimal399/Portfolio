@@ -10,7 +10,7 @@ const SKILL_CATEGORIES = [
     title: 'Frontend',
     skills: [
       { name: 'React', logo: '/react.png' },
-      { name: 'HTML', logo: '/html.jpeg' },
+      { name: 'Bootstrap', logo: '/bootstrap.png' },
       { name: 'JavaScript', logo: '/javascript.jpeg' },
       { name: 'Tailwind CSS', logo: '/tailwind.svg' },
       { name: 'CSS', logo: '/css.png' },
